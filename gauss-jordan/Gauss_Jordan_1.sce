@@ -7,7 +7,9 @@ clear
 //  su solucion utilizando el método de Gauss-Jordan
 //
 //   Armando Roque A01138717
-//   30 / SEP  / 19    version 1.0
+//   Marco Brown A00822215
+//
+//   1 / OCT  / 19    version 1.0
 //////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////
@@ -38,11 +40,10 @@ endfunction
 //////////////////////////////////////////////////////
 //  DisplayMatrix
 //
-//  Funcion que imprime la matriz resultante
+//  Funcion que imprime la matriz
 //
 //   Parametros:
-//      matAns la matriz después de haberle aplicado
-//              el método de Gauss-Jordan
+//      matAns la matriz a imprimir
 //   Regresa:
 //     nada
 /////////////////////////////////////////////////////
@@ -53,28 +54,37 @@ endfunction
 //////////////////////////////////////////////////////
 //  GaussJordan
 //
-//  Funcion que calcula las soluciones al sistema de
-//  ecuaciones
+//  Funcion que aplica el método de Gauss-Jordan a una
+//  matriz
 //
 //   Parametros:
-//      matPar  matriz que tiene el sistema de ecuaciones
+//     matPar  matriz que tiene el sistema de ecuaciones
 //   Regresa:
-//     matPar   matriz transformada con los resultados en la última columna
+//     nada
 /////////////////////////////////////////////////////
-function matPar = GaussJordan(matPar)
+function GaussJordan(matPar)
+    // Recorre todos los renglones
     for iRen = 1 : size(matPar, 1)
+        // El elemento pivote siempre está en la diagonal
         dPivote = matPar(iRen, iRen)
+        // Cambia el renglón del elemento pivote y cada número lo divide entre el elemento pivote
         for iCol = 1 : size(matPar, 2)
             matPar(iRen, iCol) = matPar(iRen, iCol) / dPivote
         end
+        // Recorre todos los renglones para ir dejando la matriz en ceros y la diagonal el uno
         for iRenK = 1 : size(matPar, 1)
+            // Solamente se aplica a filas donde no está el elemento pivote
             if iRen <> iRenK
+                // Se calcula el factor por el que hay que multiplicar el pivote para dejar en cero los números arriba y abajo del pivote
                 dFact = -(matPar(iRenK, iRen))
+                // Se aplica el factor a todo el renglón.
                 for iCol = 1 : size(matPar, 2)
                     matPar(iRenK, iCol) = matPar(iRenK, iCol) + dFact * matPar(iRen, iCol)
                 end
             end
         end
+        // Se imprime la matriz después de cada paso
+        DisplayMatrix(matPar)
     end
 endfunction
 
@@ -82,6 +92,4 @@ endfunction
 // pido los valores
 matPar = GetMatrix()
 // evaluo la serie con los valores obtenidos
-matAns = GaussJordan(matPar)
-// imprimir resultados
-DisplayMatrix(matAns)
+GaussJordan(matPar)
