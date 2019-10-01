@@ -38,17 +38,16 @@ endfunction
 //////////////////////////////////////////////////////
 //  DisplayMatrix
 //
-//  Funcion que imprime los resultados
+//  Funcion que imprime la matriz resultante
 //
 //   Parametros:
-//      matAns la matriz con la solucion X
+//      matAns la matriz después de haberle aplicado
+//              el método de Gauss-Jordan
 //   Regresa:
-//     no tiene
+//     nada
 /////////////////////////////////////////////////////
 function DisplayMatrix(matAns)
-    for iX = 1 : size(matAns,1)
-        disp("El valor de la variable en la " + string(iX) + "a posicion es: " + string(matAns(iX, size(matAns, 2))))
-    end
+    disp(matAns)
 endfunction
 
 //////////////////////////////////////////////////////
@@ -65,8 +64,8 @@ endfunction
 function matPar = GaussJordan(matPar)
     for iRen = 1 : size(matPar, 1)
         dPivote = matPar(iRen, iRen)
-        for iCol = size(matPar, 2)
-            matPar(iCol, iRen) = matPar(iCol, iRen)
+        for iCol = 1 : size(matPar, 2)
+            matPar(iRen, iCol) = matPar(iRen, iCol) / dPivote
         end
         for iRenK = 1 : size(matPar, 1)
             if iRen <> iRenK
@@ -81,7 +80,7 @@ endfunction
 
 /////// Programa Principal
 // pido los valores
-matPar = PedirDatos()
+matPar = GetMatrix()
 // evaluo la serie con los valores obtenidos
 matAns = GaussJordan(matPar)
 // imprimir resultados
