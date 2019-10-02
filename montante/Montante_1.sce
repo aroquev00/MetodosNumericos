@@ -13,8 +13,9 @@ function matMon=GetMatrix()
         for iCol=1:iTam
             matMon(iRen,iCol)=input("Ingresa el coeficiente")
         end
-        matMon(iRen, tam+1)="Ingresa el termino constante del renglon"
+        matMon(iRen, iTam+1)=input("Ingresa el termino constante del renglon")
     end
+    DisplayMatrix(matMon)
 endfunction
 
 function DisplayMatrix(matMon)
@@ -28,17 +29,19 @@ function Montante(matMon)
             if(iK<>iRen)
                 for iCol=iRen+1:size(matMon,2)
                     matMon(iK,iCol)=(matMon(iRen,iRen)*matMon(iK,iCol)-matMon(iK,iRen)*matMon(iRen,iCol))/iPivAnt
-                    matMon(iK,iRen)=0
                 end
-                iPivAnt=matMon(iRen,iRen)
-                DisplayMatrix(matMon)
+                matMon(iK,iRen)=0
+             end
         end
-        matMon(iRen,iRen)=iPivAnt
+        iPivAnt=matMon(iRen,iRen)
         DisplayMatrix(matMon)
     end
+    for(iRen=1:size(matMon,1)-1)
+        matMon(iRen,iRen)=iPivAnt
+    end
     DisplayMatrix(matMon)
-    for iI=1:size(matMon,1)
-        x(iI)=matMon(iI,iCol)/iPivAnt
+    for iRen=1:size(matMon,1)
+        x(iRen)=matMon(iRen,size(matMon,2))/iPivAnt
     end
     DisplayMatrix(x)
 endfunction
