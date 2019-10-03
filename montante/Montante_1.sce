@@ -45,7 +45,16 @@ endfunction
 function DisplayMatrix(matMon)
     disp(matMon)
 endfunction
-
+//////////////////////////////////////////////////////
+//  Montante
+//
+//  Funcion que imprime la matriz transformada y los
+//resultados de las incognitas de la matriz
+//   Parametros:
+//      matMon la matriz a transformar
+//   Regresa:
+//     nada
+/////////////////////////////////////////////////////
 function Montante(matMon)
     iPivAnt=1
     //empieza en uno porque no existe uno anterior
