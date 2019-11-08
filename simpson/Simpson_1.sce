@@ -18,7 +18,7 @@ clear
 //   Parametros:
 //     dX     es el valor de x para evaluar
 //   Regresa:
-//     dY     es el caclulo de x elevado al cuadrado
+//     dY     es el caclulo de la funcion evaluada
 /////////////////////////////////////////////////////
 function dY = F(dX)
     dY = 1 - exp(- dX)
@@ -27,17 +27,17 @@ endfunction
 //////////////////////////////////////////////////////
 //  Area
 //
-//  Funcion que calcula la integral de los trapecios
+//  Funcion que calcula la integral de las parabolas
 //
 //   Parametros:
 //      dA     es el valor del limite inicial
 //      dB     es el valor del limite final
-//      iN     es el numero de trapecios
+//      iN     es el numero de intervalos
 //   Regresa:
-//     dSuma   es el area calculada como la suma de trapecios
+//     dSuma   es el area calculada como la integral de las parabolas
 /////////////////////////////////////////////////////
 function dSuma = Area(dA, dB, iN)
-    // calculo h (base de cada rectangulo)
+    // calculo h (base de cada intervalo)
     dH = (dB - dA) / iN
     // inicializo la suma
     dSuma = 0
@@ -64,12 +64,15 @@ endfunction
 // pido los valores
 dA = input("Da el limite inferior ")
 dB = input("Da el limite superior ")
+// valido que los límites sean válidos
 while dA >= dB then
     disp("Los límites no son válidos")
     dA = input("Da el limite inferior ")
     dB = input("Da el limite superior ")
 end
+// pido el numero de intervalos
 iN = input("Da el numero de intervalos ")
+// valido el numero de intervalos
 while (iN < 1 | (modulo(iN, 2) ~= 0)) then
     disp("El numero de intervalos debe ser positivo y par")
     iN = input("Da el numero de intervalos ")
