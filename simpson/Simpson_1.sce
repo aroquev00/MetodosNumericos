@@ -41,13 +41,21 @@ function dSuma = Area(dA, dB, iN)
     dH = (dB - dA) / iN
     // inicializo la suma
     dSuma = 0
-    // ciclo para sumar los valores que van multiplicados por 2
-    for i = 1 : iN - 1
-        dSuma = dSuma + F(dA + i * dH)
+    // ciclo para sumar los valores impares que van multiplicados por 4
+    dImpares = 0
+    for i = 1 : 2 : iN - 1
+        dImpares = dImpares + F(dA + i * dH)
     end
+    dSuma  = dSuma + (dImpares * 4)
+    // ciclo para sumar los valores pares que van multiplicados por 2
+    dPares = 0
+    for i = 2 : 2 : iN - 2
+        dPares = dPares + F(dA + i * dH)
+    end
+    dSuma = dSuma + (dPares * 2)
     // agrego el valor inicial y final
-    dSuma = (dSuma * 2) + F(dA) + F(dB)
-    dSuma = (dH / 2) * dSuma 
+    dSuma = dSuma + F(dA) + F(dB)
+    dSuma = (dH / 3) * dSuma 
 endfunction
 
 
@@ -63,8 +71,8 @@ while dA >= dB then
 end
 iN = input("Da el numero de intervalos ")
 while (iN < 1 | (modulo(iN, 2) ~= 0)) then
-    disp("El numero de trapecios debe ser positivo y par")
-    iN = input("Da el numero de trapecios ")
+    disp("El numero de intervalos debe ser positivo y par")
+    iN = input("Da el numero de intervalos ")
 end
 
 // despliego la integral aproximada
