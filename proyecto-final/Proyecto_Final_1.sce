@@ -9,7 +9,9 @@ clear
 //   16 / Noviembre  / 2019    version 1.0
 //////////////////////////////////////////////////////
 
-function iMatValues = GetExcelValues(sExcelName)
+function iMatValues = GetExcelValues()
+    // pide nombre de archivo
+    sExcelName = input("Da el nombre del archivo de Excel (sin la extensión)", "string")
     // lee las hojas del excel
     dSheets = readxls(sExcelName + '.xls')
     // lee la primera hoja del excel
@@ -21,10 +23,8 @@ endfunction
 
 /////// Programa Principal
 
-// pide nombre de archivo
-sExcelName = input("Da el nombre del archivo de Excel (sin la extensión)")
 // lee los programas de excel
-iMatValues = GetExcelValues(sExcelName)
+iMatValues = GetExcelValues()
 disp(iMatValues)
 
 
