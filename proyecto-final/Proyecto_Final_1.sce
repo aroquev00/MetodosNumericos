@@ -307,11 +307,11 @@ endfunction
 // lee los datos de excel
 iMatValues = GetExcelValues()
 
-// estructura de datos para guardar las regresiones
-regLinear = struct("regParams", GetRegLineal(iMatValues))
-arrRegressions = []
+// estructuras de datos para guardar las regresiones
+regLinear = struct("regParams", GetRegLineal(iMatValues), "regFunc", deff("y = funLineal(x)", "y = regLinear.regParams(1) + regLinear.regParams(2) * x"), "rSquared", 0)
+//regCuadratica = 
 arrRegressions(1) = regLinear
-disp(arrRegressions(1).regParams)
+disp(arrRegressions(1).regFunc(60))
 
 //Regressions = tlist(["listtype", "type", "regParams", "regFunction", "rSquared"], ["lineal", "cuadratica", "exponencial", "potencia"], [GetRegLineal(iMatValues), [1,2]], [], [])
 
@@ -321,5 +321,5 @@ disp(arrRegressions(1).regParams)
 //Regressions.regParams(2) = GetRegLineal(iMatValues)
 
 
-
+//deff("y = funLineal(x)", "y = regLinear.regParams(1) + regLinear.regParams(2) * x")
 //deff("y = funLineal(x)", "y = (Regressions.regParams(1))(1) * x + Regressions.regParams(2)")
