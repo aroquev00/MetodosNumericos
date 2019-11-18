@@ -302,6 +302,14 @@ function iArrRegPotencia = GetRegPotencia(iMatValues)
     iArrRegPotencia(1) = exp(iArrRegPotencia(1))
 endfunction
 
+
+// calcular r^2
+function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
+    dYMean = mean(iMatValues(:, 2))
+    disp(dYMean)
+endfunction
+
+
 /////// Programa Principal
 
 // lee los datos de excel
@@ -332,7 +340,8 @@ deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ (regPotencia.reg
 regPotencia.regFunc = funPotencia
 iArrRegressions(4) = regPotencia
 
-for i = 1 : 4
-    disp(iArrRegressions(i).regParams)
-    disp(iArrRegressions(i).regFunc(60))
-end
+iArrRegressions = GetR2(iMatValues, iArrRegressions)
+
+// calcular r^2
+
+
