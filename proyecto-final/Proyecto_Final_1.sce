@@ -308,9 +308,36 @@ endfunction
 iMatValues = GetExcelValues()
 
 // estructuras de datos para guardar las regresiones
-regLinear = struct("regParams", GetRegLineal(iMatValues), "regFunc", deff("y = funLineal(x)", "y = regLinear.regParams(1) + regLinear.regParams(2) * x"), "rSquared", 0)
-//regCuadratica = 
-arrRegressions(1) = regLinear
+// regresion lineal
+regLineal = struct("regParams", GetRegLineal(iMatValues))
+deff("y = funLineal(x)", "y = regLineal.regParams(1) + regLineal.regParams(2) * x")
+regLineal.regFunc = funLineal
+iArrRegressions(1) = regLineal
+
+//regCuadratica 
+regCuadratica = struct("regParams", GetRegCuadratica(iMatValues))
+deff("y = funCuadratica(x)", "y = regCuadratica.regParams(1) + regCuadratica.regParams(2) * x + regCuadratica.regParams(3) * (x ^ 2)")
+regCuadratica.regFunc = funCuadratica
+iArrRegressions(2) = regCuadratica
+
+// regExponencial
+regExponencial = struct("regParams", GetRegExponencial(iMatValues))
+deff("y = funExponencial(x)", "y = regExponencial.regParams(1) + exp(regExponencial.regParams(2) * x)")
+regExponencial.regFunc = funExponencial
+iArrRegressions(3) = regExponencial
+
+// reg Potencia
+regPotencia = struct("regParams", GetRegPotencia(iMatValues))
+deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ regExponencial.regParams(2))")
+regPotencia.regFunc = funPotencia
+iArrRegressions(4) = regPotencia
+
+for i = 1 : 4
+    disp(iArrRegressions(i).regFunc(60))
+end
+
+
+
 disp(arrRegressions(1).regFunc(60))
 
 //Regressions = tlist(["listtype", "type", "regParams", "regFunction", "rSquared"], ["lineal", "cuadratica", "exponencial", "potencia"], [GetRegLineal(iMatValues), [1,2]], [], [])
@@ -321,5 +348,5 @@ disp(arrRegressions(1).regFunc(60))
 //Regressions.regParams(2) = GetRegLineal(iMatValues)
 
 
-//deff("y = funLineal(x)", "y = regLinear.regParams(1) + regLinear.regParams(2) * x")
+deff("y = funLineal(x)", "y = regLineal.regParams(1) + regLineal.regParams(2) * x")
 //deff("y = funLineal(x)", "y = (Regressions.regParams(1))(1) * x + Regressions.regParams(2)")
