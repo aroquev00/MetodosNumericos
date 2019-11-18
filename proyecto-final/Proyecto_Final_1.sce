@@ -53,13 +53,11 @@ function iArrRegression = Montante(matMon)
         end
         iPivAnt=matMon(iRen,iRen)
         //el pivote anterior cambia por el renglon K
-        DisplayMatrix(matMon)
     end
     for(iRen=1:size(matMon,1)-1)
         //el ultimo pivote anterior toma las posiciones de los demas repitiendose
         matMon(iRen,iRen)=iPivAnt
     end
-    DisplayMatrix(matMon)
     for iRen=1:size(matMon,1)
         //se expresan los resultados 
         iArrRegression(iRen)=matMon(iRen,size(matMon,2))/iPivAnt
@@ -274,6 +272,8 @@ function iArrRegExponencial = GetRegExponencial(iMatValues)
 
     // llamar a Montante y que regrese la matriz con las respuestas
     iArrRegExponencial = Montante(iMatMontanteParam)
+    // ajustar el valor del termino constante con exponencial
+    iArrRegExponencial(1) = exp(iArrRegExponencial(1))
 endfunction
 
 // regresion potencia
@@ -298,6 +298,8 @@ function iArrRegPotencia = GetRegPotencia(iMatValues)
 
     // llamar a Montante y que regrese la matriz con las respuestas
     iArrRegPotencia = Montante(iMatMontanteParam)
+    // ajustar el valor del termino constante con exponencial
+    iArrRegPotencia(1) = exp(iArrRegPotencia(1))
 endfunction
 
 /////// Programa Principal
