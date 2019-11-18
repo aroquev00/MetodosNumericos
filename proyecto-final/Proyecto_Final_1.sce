@@ -322,31 +322,17 @@ iArrRegressions(2) = regCuadratica
 
 // regExponencial
 regExponencial = struct("regParams", GetRegExponencial(iMatValues))
-deff("y = funExponencial(x)", "y = regExponencial.regParams(1) + exp(regExponencial.regParams(2) * x)")
+deff("y = funExponencial(x)", "y = regExponencial.regParams(1) * exp(regExponencial.regParams(2) * x)")
 regExponencial.regFunc = funExponencial
 iArrRegressions(3) = regExponencial
 
 // reg Potencia
 regPotencia = struct("regParams", GetRegPotencia(iMatValues))
-deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ regExponencial.regParams(2))")
+deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ (regPotencia.regParams(2)))")
 regPotencia.regFunc = funPotencia
 iArrRegressions(4) = regPotencia
 
 for i = 1 : 4
+    disp(iArrRegressions(i).regParams)
     disp(iArrRegressions(i).regFunc(60))
 end
-
-
-
-disp(arrRegressions(1).regFunc(60))
-
-//Regressions = tlist(["listtype", "type", "regParams", "regFunction", "rSquared"], ["lineal", "cuadratica", "exponencial", "potencia"], [GetRegLineal(iMatValues), [1,2]], [], [])
-
-// obtener los parametros de las regresiones
-
-//(Regressions.regParams(1))(1,1) = 2
-//Regressions.regParams(2) = GetRegLineal(iMatValues)
-
-
-deff("y = funLineal(x)", "y = regLineal.regParams(1) + regLineal.regParams(2) * x")
-//deff("y = funLineal(x)", "y = (Regressions.regParams(1))(1) * x + Regressions.regParams(2)")
