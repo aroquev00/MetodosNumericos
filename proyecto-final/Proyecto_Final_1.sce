@@ -304,14 +304,19 @@ endfunction
 
 /////// Programa Principal
 
-// lee los programas de excel
+// lee los datos de excel
 iMatValues = GetExcelValues()
 
-// obtener las regresiones
-disp(GetRegLineal(iMatValues))
-disp(GetRegCuadratica(iMatValues))
-disp(GetRegExponencial(iMatValues))
-disp(GetRegPotencia(iMatValues))
+// estructura de datos para guardar las regresiones
+Regressions = tlist(["type", "regParams", "regFunction", "rSquared"], ["lineal", "cuadratica", "exponencial", "potencia"], [], [])
+
+// obtener los parametros de las regresiones
+Regressions.regParams(1) = GetRegLineal(iMatValues)
+Regressions.regParams(2) = GetRegCuadratica(iMatValues)
+Regressions.regParams(3) = GetRegExponencial(iMatValues)
+Regressions.regParams(4) = GetRegPotencia(iMatValues)
+
+deff("y = funLineal(x)", "y = (Regressions.regParams(1))(1) * x + Regressions.regParams(2)")
 
 
 // regresion lineal
