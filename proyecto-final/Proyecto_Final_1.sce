@@ -10,10 +10,11 @@ clear
 //////////////////////////////////////////////////////
 
 function iMatValues = GetExcelValues()
-    // pide nombre de archivo
-    sExcelName = input("Da el nombre del archivo de Excel (sin la extensión)", "string")
+    // pide al usuario que seleccione el archivo
+    sExcelName = uigetfile("*.xls")
+    disp(sExcelName)
     // lee las hojas del excel
-    dSheets = readxls(sExcelName + '.xls')
+    dSheets = readxls(sExcelName)
     // lee la primera hoja del excel
     dSheet1 = dSheets(1)
     // la matriz almacena los valores de las x y las y
