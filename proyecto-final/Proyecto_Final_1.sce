@@ -368,3 +368,10 @@ iArrRegressions(4) = regPotencia
 // calcular r^2
 iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
+title("Regresion")
+scatter(iMatValues(:, 1), iMatValues(:, 2))
+xdata = linspace ( 1 , 100 , 500 );
+ydata = iArrRegressions(3).regFunc(xdata)
+plot(xdata, ydata)
+ydata = iArrRegressions(4).regFunc(xdata)
+plot(xdata, ydata)
