@@ -12,7 +12,7 @@ clear
 // leer valores del excel
 function iMatValues = GetExcelValues()
     // pide nombre de archivo
-    sExcelName = input("Da el nombre del archivo de Excel (sin la extension)", "string")
+    //sExcelName = input("Da el nombre del archivo de Excel (sin la extension)", "string")
     // lee las hojas del excel
     dSheets = readxls('datos.xls')
     // lee la primera hoja del excel
@@ -333,6 +333,28 @@ function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
     end
 endfunction
 
+function plottear(iMatValues, iArrRegressions)
+    xtitle ( "Regresiones con base en datos" , "Variable dependiente (X)" , "Variable independiente (Y)" );
+    xgrid([1])
+    
+    // plottear los puntos del excel
+    scatter(iMatValues(:, 1), iMatValues(:, 2), 36, "scilabred2","x")
+    // plottear regresion lineal
+    xdata = linspace ( 1 , 100 , 100 );
+    ydata = iArrRegressions(1).regFunc(xdata)
+    plot(xdata, ydata, "r")
+    // plotear regresion cuadratica
+    ydata = iArrRegressions(2).regFunc(xdata)
+    plot(xdata, ydata, "g")
+    // plotear regresion exponencial
+    ydata = iArrRegressions(3).regFunc(xdata)
+    plot(xdata, ydata, "b")
+    // plotear regresion potencia
+    ydata = iArrRegressions(4).regFunc(xdata)
+    plot(xdata, ydata, "k")
+    legends(['cos(t)';'cos(2*t)';'cos(3*t)'],[-1,2 3],opt="ur")
+endfunction
+
 
 /////// Programa Principal
 
@@ -368,10 +390,5 @@ iArrRegressions(4) = regPotencia
 // calcular r^2
 iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
-title("Regresion")
-scatter(iMatValues(:, 1), iMatValues(:, 2))
-xdata = linspace ( 1 , 100 , 500 );
-ydata = iArrRegressions(3).regFunc(xdata)
-plot(xdata, ydata)
-ydata = iArrRegressions(4).regFunc(xdata)
-plot(xdata, ydata)
+plottear(iMatValues, iArrRegressions)
+
