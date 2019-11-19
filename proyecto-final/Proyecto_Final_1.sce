@@ -305,8 +305,32 @@ endfunction
 
 // calcular r^2
 function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
+    iN = size(iMatValues, 1)
     dYMean = mean(iMatValues(:, 2))
-    disp(dYMean)
+
+
+    dSSTot = 0
+    dSSRegLin = 0
+    dSSRegCuad = 0
+    dSSRegExp = 0
+    dSSRegPot = 0
+    for i = 1 : iN
+        dSSTot = dSSTot + (iMatValues(i, 2) - dYMean) ^ 2
+        dSSRegLin = dSSRegLin + (iMatValues(i, 2) - iArrRegressions(1).regFunc(iMatValues(i, 1))) ^ 2
+        dSSRegCuad = dSSRegCuad + (iMatValues(i, 2) - iArrRegressions(2).regFunc(iMatValues(i, 1))) ^ 2
+        dSSRegExp = dSSRegExp + (iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))) ^ 2
+        dSSRegPot = dSSRegPot + (iMatValues(i, 2) - iArrRegressions(4).regFunc(iMatValues(i, 1))) ^ 2
+    end
+
+    iArrRegressions(1).r2 = 1 - dSSRegLin / dSSTot
+    iArrRegressions(2).r2 = 1 - dSSRegCuad / dSSTot
+    iArrRegressions(3).r2 = 1 - dSSRegExp / dSSTot
+    iArrRegressions(4).r2 = 1 - dSSRegPot / dSSTot
+    iArrRegR2 = iArrRegressions
+    
+    for i = 1 : 4
+        disp(iArrRegR2(i).r2)
+    end
 endfunction
 
 
@@ -340,8 +364,7 @@ deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ (regPotencia.reg
 regPotencia.regFunc = funPotencia
 iArrRegressions(4) = regPotencia
 
-iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
 // calcular r^2
-
+iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
