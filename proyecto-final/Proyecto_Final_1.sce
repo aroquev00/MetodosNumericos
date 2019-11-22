@@ -338,9 +338,11 @@ function plottear(iMatValues, iArrRegressions)
     xgrid([1])
     
     // plottear los puntos del excel
+    
     scatter(iMatValues(:, 1), iMatValues(:, 2), 36, "scilabred2","x")
     // plottear regresion lineal
-    xdata = linspace ( 1 , 100 , 100 );
+    iTop = iMatValues(size(iMatValues, 1), 1) + 10
+    xdata = linspace ( 1 , iTop , iTop * 2 );
     ydata = iArrRegressions(1).regFunc(xdata)
     plot(xdata, ydata, "r")
     // plotear regresion cuadratica
@@ -352,7 +354,7 @@ function plottear(iMatValues, iArrRegressions)
     // plotear regresion potencia
     ydata = iArrRegressions(4).regFunc(xdata)
     plot(xdata, ydata, "k")
-    legends(['cos(t)';'cos(2*t)';'cos(3*t)'],[-1,2 3],opt="ur")
+    legend(['Datos','Lineal','Cuadratico', "Exponencial", "Potencia"], [1])
 endfunction
 
 
