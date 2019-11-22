@@ -392,5 +392,19 @@ iArrRegressions(4) = regPotencia
 // calcular r^2
 iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
-plottear(iMatValues, iArrRegressions)
+//plottear(iMatValues, iArrRegressions)
+
+// generar excel
+//input(dar nombre excel)
+inicio = 0
+fin = 99
+step = 1
+intervalos = (fin - inicio + 1) / step
+xdata = linspace ( inicio , fin , intervalos);
+ydata = iArrRegressions(2).regFunc(xdata)
+excelData(:,1) = xdata
+excelData(:,2) = ydata
+filename = fullfile(get_absolute_file_path("Proyecto_Final_1.sce"), "data.csv");
+csvWrite(excelData,filename)
+
 
