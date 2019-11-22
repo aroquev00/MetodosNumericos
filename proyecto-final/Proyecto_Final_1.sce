@@ -473,7 +473,7 @@ global regExponencial
 global regPotencia
 
 valorMod=handles.valorModelo.string;
-disp(iArrRegressions(1).regParams)
+disp(iArrRegressions(1).regFunc(60))
 endfunction
 
 
