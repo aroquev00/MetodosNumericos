@@ -407,4 +407,33 @@ excelData(:,2) = ydata
 filename = fullfile(get_absolute_file_path("Proyecto_Final_1.sce"), "data.csv");
 csvWrite(excelData,filename)
 
+// valores atípicos después de sacar la mejor regresión. Suponiendo que la mejor es la exponencial
 
+//disp(iArrRegressions(3).regFunc(60))
+for i = 1 : size(iMatValues, 1)
+    disp(iArrRegressions(3).regFunc(iMatValues(i, 1)))
+    dArrErrors(i) = iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))
+end
+dErrorsMean = mean(dArrErrors)
+dStdDevErrors = 0
+for i = 1 : size(dArrErrors,1)
+    dStdDevErrors = dStdDevErrors + ((dArrErrors(i) - dErrorsMean) ^ 2)
+end
+dStdDevErrors = (dStdDevErrors / size(dArrErrors,1)) ^ (1/2)
+disp("errores")
+disp(dArrErrors)
+disp(dStdDevErrors)
+// sacar valores atípicos
+iContOutliers = 0
+disp("dT")
+for i = 1 : size(dArrErrors, 1)
+    dT = dArrErrors(i) / dStdDevErrors
+    disp(dT)
+    if (dT >= 2)
+        iContOutliers = iContOutliers + 1
+        iArrOutliers(iContOutliers, 1) = iMatValues(i, 1)
+        iArrOutliers(iContOutliers, 2) = iMatValues(i, 2) 
+    end
+end
+disp("outliers:")
+disp(iArrOutliers)
