@@ -396,11 +396,11 @@ iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
 // generar excel
 //input(dar nombre excel)
-inicio = 0
-fin = 99
-step = 1
-intervalos = (fin - inicio + 1) / step
-xdata = linspace ( inicio , fin , intervalos);
+iInicio = 0
+iFin = 99
+iStep = 1
+iIntervalos = (iFin - iInicio + 1) / iStep
+xdata = linspace ( iInicio , iFin , iIntervalos);
 ydata = iArrRegressions(2).regFunc(xdata)
 excelData(:,1) = xdata
 excelData(:,2) = ydata
@@ -409,31 +409,29 @@ csvWrite(excelData,filename)
 
 // valores atípicos después de sacar la mejor regresión. Suponiendo que la mejor es la exponencial
 
-//disp(iArrRegressions(3).regFunc(60))
+// se recorre la matriz para calcular los errores entre los valores reales y la regresión
 for i = 1 : size(iMatValues, 1)
-    disp(iArrRegressions(3).regFunc(iMatValues(i, 1)))
     dArrErrors(i) = iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))
 end
+// se calcula la media de los errores
 dErrorsMean = mean(dArrErrors)
 dStdDevErrors = 0
+// se calcula la desviacion estandar de los errores
 for i = 1 : size(dArrErrors,1)
     dStdDevErrors = dStdDevErrors + ((dArrErrors(i) - dErrorsMean) ^ 2)
 end
 dStdDevErrors = (dStdDevErrors / size(dArrErrors,1)) ^ (1/2)
-disp("errores")
-disp(dArrErrors)
-disp(dStdDevErrors)
-// sacar valores atípicos
+// se buscan los outliers
 iContOutliers = 0
-disp("dT")
 for i = 1 : size(dArrErrors, 1)
+    // dT es el numero de desviaciones estandar a las que se encuentra el error del promedio
     dT = dArrErrors(i) / dStdDevErrors
-    disp(dT)
+    // se considera un Outlier si dT es mayor o igual a 2
     if (dT >= 2)
         iContOutliers = iContOutliers + 1
+        // se agrega el outlier a una matriz donde se almacenan
         iArrOutliers(iContOutliers, 1) = iMatValues(i, 1)
         iArrOutliers(iContOutliers, 2) = iMatValues(i, 2) 
     end
 end
-disp("outliers:")
 disp(iArrOutliers)
