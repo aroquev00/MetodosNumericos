@@ -306,36 +306,46 @@ endfunction
 
 // calcular r^2
 function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
+    dMejorReg = 0
+    global dNumMejor
+    dNumMejor = 0
     iN = size(iMatValues, 1)
     dYMean = mean(iMatValues(:, 2))
-    dMejorReg = 0
-    dNumMejor = 0
+    dYLog = log(iMatValues(:, 2))
+    dYLogMean = mean(dYLog)
+
     dSSTot = 0
+    dSSTotLog = 0
     dSSRegLin = 0
     dSSRegCuad = 0
     dSSRegExp = 0
     dSSRegPot = 0
     for i = 1 : iN
         dSSTot = dSSTot + (iMatValues(i, 2) - dYMean) ^ 2
+        dSSTotLog = dSSTotLog + (dYLog(i) - dYLogMean) ^ 2
         dSSRegLin = dSSRegLin + (iMatValues(i, 2) - iArrRegressions(1).regFunc(iMatValues(i, 1))) ^ 2
         dSSRegCuad = dSSRegCuad + (iMatValues(i, 2) - iArrRegressions(2).regFunc(iMatValues(i, 1))) ^ 2
-        dSSRegExp = dSSRegExp + (iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))) ^ 2
-        dSSRegPot = dSSRegPot + (iMatValues(i, 2) - iArrRegressions(4).regFunc(iMatValues(i, 1))) ^ 2
+        dSSRegExp = dSSRegExp + (log(iMatValues(i, 2)) - log(iArrRegressions(3).regFunc(iMatValues(i, 1)))) ^ 2
+        dSSRegPot = dSSRegPot + (log(iMatValues(i, 2)) - log(iArrRegressions(4).regFunc(iMatValues(i, 1)))) ^ 2
     end
 
     iArrRegressions(1).r2 = 1 - dSSRegLin / dSSTot
     iArrRegressions(2).r2 = 1 - dSSRegCuad / dSSTot
-    iArrRegressions(3).r2 = 1 - dSSRegExp / dSSTot
-    iArrRegressions(4).r2 = 1 - dSSRegPot / dSSTot
+    iArrRegressions(3).r2 = 1 - dSSRegExp / dSSTotLog
+    iArrRegressions(4).r2 = 1 - dSSRegPot / dSSTotLog
     iArrRegR2 = iArrRegressions
     //disp(iArrRegressions(1).regParams(1))
+    linealstring= "y= ("+string(iArrRegressions(1).regParams(1))+") +("+string(iArrRegressions(1).regParams(2))+")*x"
+    cuadraticastring="y= ("+string(iArrRegressions(2).regParams(1))+") +("+string(iArrRegressions(2).regParams(2))+")*x("+string(iArrRegressions(2).regParams(3))+")*x^2"
+    exponencialstring="y= ("+string(iArrRegressions(3).regParams(1))+")*e^ ("+string(iArrRegressions(3).regParams(2))+")*x"
+    potenciastring="y= ("+string(iArrRegressions(4).regParams(1))+")*x^ ("+string(iArrRegressions(4).regParams(2))+")"
     params = [" " "y" "r^2" ];
     towns = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
-    pop  = ["valor1" "valor2" "valor3" "valor4"]';
+    pop  = [linealstring cuadraticastring exponencialstring potenciastring]';
     //pop  = string([22.41 11.77 33.41 4.24]');
     temp = string([iArrRegR2(1).r2 iArrRegR2(2).r2 iArrRegR2(3).r2 iArrRegR2(4).r2]');
     table = [params; [ towns pop temp ]]
-    handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0064103,0.0022727,0.4903846,0.4],'Relief','default','SliderStep',[0.01,0.1],'String', table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
+    handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.2022727,0.5,0.2],'Relief','default','SliderStep',[0.01,0.1],'String',table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
     for(i=1:4)
         if(dMejorReg < iArrRegR2(i).r2)
             dMejorReg=iArrRegR2(i).r2
@@ -344,13 +354,13 @@ function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
     end
     select dNumMejor
     case 1 then
-        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.8045455,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Lineal','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
+        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Lineal','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
     case 2 then
-        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.8045455,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Cuadratica','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
+        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Cuadratica','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
     case 3 then
-        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.8045455,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Exponencial','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
+        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Exponencial','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
     case 4 then
-        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.8045455,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Potencia','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
+        handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Potencia','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
     end
 
 endfunction
@@ -360,9 +370,11 @@ function plottear(iMatValues, iArrRegressions)
     xgrid([1])
     
     // plottear los puntos del excel
+    
     scatter(iMatValues(:, 1), iMatValues(:, 2), 36, "scilabred2","x")
     // plottear regresion lineal
-    xdata = linspace ( 1 , 100 , 100 );
+    iTop = iMatValues(size(iMatValues, 1), 1) + 10
+    xdata = linspace ( 1 , iTop , iTop * 2 );
     ydata = iArrRegressions(1).regFunc(xdata)
     plot(xdata, ydata, "r")
     // plotear regresion cuadratica
@@ -374,39 +386,42 @@ function plottear(iMatValues, iArrRegressions)
     // plotear regresion potencia
     ydata = iArrRegressions(4).regFunc(xdata)
     plot(xdata, ydata, "k")
-    legends(['cos(t)';'cos(2*t)';'cos(3*t)'],[-1,2 3],opt="ur")
+    legend(['Datos','Lineal','Cuadratico', "Exponencial", "Potencia"], [1])
 endfunction
 
 // This GUI file is generated by guibuilder version 4.2.1
 //////////
-f=figure('figure_position',[291,62],'figure_size',[640,480],'auto_resize','on','background',[33],'figure_name','Graphic window number %d','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','off');
+f=figure('figure_position',[221,90],'figure_size',[640,480],'auto_resize','on','background',[33],'figure_name','Graphic window number %d','dockable','off','infobar_visible','off','toolbar_visible','off','menubar_visible','off','default_axes','on','visible','off');
 //////////
 handles.dummy = 0;
-handles.examinarArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0032051,0.9022727,0.4942308,0.0931818],'Relief','default','SliderStep',[0.01,0.1],'String','Examinar Archivo de Pronostico','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','examinarArchivo','Callback','examinarArchivo_callback(handles)')
-handles.Gráfica= newaxes();handles.Gráfica.margins = [ 0 0 0 0];handles.Gráfica.axes_bounds = [0.0064103,0.1022727,0.4903846,0.4954545];
-
+handles.examinarArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0048077,0.9045455,0.4903846,0.0886364],'Relief','default','SliderStep',[0.01,0.1],'String','Examinar Archivo de Pronostico','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','examinarArchivo','Callback','examinarArchivo_callback(handles)')
+handles.Gráfica= newaxes();handles.Gráfica.margins = [ 0 0 0 0];handles.Gráfica.axes_bounds = [0.0352564,0.1,0.4647436,0.45];
 params = [" " "y" "r^2" ];
 towns = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
 pop  = ["valor1" "valor2" "valor3" "valor4"]';
 //pop  = string([22.41 11.77 33.41 4.24]');
 temp = ["valor1" "valor2" "valor3" "valor4"]';
 table = [params; [ towns pop temp ]]
-handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.0064103,0.0022727,0.4903846,0.4],'Relief','default','SliderStep',[0.01,0.1],'String', table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
-
-handles.texto1=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5016026,0.9068182,0.4935897,0.0909091],'Relief','default','SliderStep',[0.01,0.1],'String','Analisis de datos: El mejor modelo para el archivo es','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto1','Callback','')
-handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.8045455,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Tipo de Modelo','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
-handles.texto2=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4967949,0.7022727,0.3044872,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Usando cada modelo para el valor','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto2','Callback','')
-handles.valorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7996795,0.7022727,0.1939103,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingrese un valor...','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorModelo','Callback','')
-handles.calcularModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.599359,0.6,0.3012821,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Calcular con el valor','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','calcularModelo','Callback','calcularModelo_callback(handles)')
+handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.2022727,0.5,0.2],'Relief','default','SliderStep',[0.01,0.1],'String',table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
+handles.texto1=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.1,0.5,0.0931818],'Relief','default','SliderStep',[0.01,0.1],'String','El mejor modelo para el archivo es:','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto1','Callback','')
+handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Tipo de Modelo','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
+handles.texto2=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.9,0.2996795,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Usando cada modelo para el valor','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto2','Callback','')
+handles.valorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7996795,0.9,0.1971154,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Ingrese un valor...','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorModelo','Callback','')
+handles.calcularModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5977564,0.8022727,0.3028846,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Calcular con el valor','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','calcularModelo','Callback','calcularModelo_callback(handles)')
 
 parameters = [" " "X"];
 tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
 pop  = string(["valor1" "valor2" "valor3" "valor4"]');
 table1 = [parameters; [ tipos pop ]]
-handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5016026,0.2022727,0.4935897,0.3977273],'Relief','default','SliderStep',[0.01,0.1],'String', table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
-
-handles.texto3=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4951923,0.0977273,0.5016026,0.1022727],'Relief','default','SliderStep',[0.01,0.1],'String','De acuerdo con el modelo, los valores atipicos son:','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto3','Callback','')
-handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4951923,0.0022727,0.5032051,0.0931818],'Relief','default','SliderStep',[0.01,0.1],'String','Atipicos','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
+handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
+handles.texto3=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.5022727,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Los valores atípicos son:','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto3','Callback','')
+handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Atípicos','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
+handles.text4=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.3,0.4967949,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingresa lo que se pide para el archivo de excel','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','text4','Callback','')
+handles.inicioExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.2,0.2019231,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Valor Inicio','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','inicioExcel','Callback','')
+handles.finalExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.1,0.2019231,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Valor Final','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','finalExcel','Callback','')
+handles.intervalosExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.0022727,0.2019231,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Intervalos de:','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','intervalosExcel','Callback','')
+handles.nombreArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.6987179,0.2,0.2996795,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingrese Nombre del Archivo...','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','nombreArchivo','Callback','')
+handles.generarArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7099359,0.0181818,0.2804487,0.1727273],'Relief','default','SliderStep',[0.01,0.1],'String','Generar el Archivo','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','generarArchivo','Callback','generarArchivo_callback(handles)')
 
 
 f.visible = "on";
@@ -418,7 +433,9 @@ f.visible = "on";
 
 
 function examinarArchivo_callback(handles)
+//Write your callback for  examinarArchivo  here
 // lee los programas de excel
+global iMatValues
 iMatValues = GetExcelValues()
 disp(iMatValues)
 // estructuras de datos para guardar las regresiones
@@ -457,27 +474,99 @@ iArrRegressions = GetR2(iMatValues, iArrRegressions)
 
 plottear(iMatValues, iArrRegressions)
 
+//Atipicos
+for i = 1 : size(iMatValues, 1)
+    dArrErrors(i) = iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))
+end
+// se calcula la media de los errores
+dErrorsMean = mean(dArrErrors)
+dStdDevErrors = 0
+// se calcula la desviacion estandar de los errores
+for i = 1 : size(dArrErrors,1)
+    dStdDevErrors = dStdDevErrors + ((dArrErrors(i) - dErrorsMean) ^ 2)
+end
+dStdDevErrors = (dStdDevErrors / size(dArrErrors,1)) ^ (1/2)
+// se buscan los outliers
+iContOutliers = 0
+sAtipicos = ""
+for i = 1 : size(dArrErrors, 1)
+    // dT es el numero de desviaciones estandar a las que se encuentra el error del promedio
+    dT = dArrErrors(i) / dStdDevErrors
+    // se considera un Outlier si dT es mayor o igual a 2
+    if (dT >= 2)
+        iContOutliers = iContOutliers + 1
+        // se agrega el outlier a una matriz donde se almacenan
+        sAtipicos = sAtipicos + " (" + string(iMatValues(i, 1)) + ", " + string(iMatValues(i, 2)) +")"
+        iArrOutliers(iContOutliers, 1) = iMatValues(i, 1)
+        iArrOutliers(iContOutliers, 2) = iMatValues(i, 2) 
+    end
+end
+handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String',sAtipicos,'Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
+
 endfunction
 
 
 function tablaModelos_callback(handles)
+//Write your callback for  tablaModelos  here
+
 endfunction
 
 
 function calcularModelo_callback(handles)
 //Write your callback for  calcularModelo  here
+global iMatValues
 global iArrRegressions
 global regLineal
 global regCuadratica
 global regExponencial
 global regPotencia
+global dNumMejor
 
-valorMod=handles.valorModelo.string;
-disp(iArrRegressions(1).regFunc(60))
+valorRec=handles.valorModelo.string;
+valorMod=strtod(valorRec)
+regLineal=string(iArrRegressions(1).regFunc(valorMod))
+regCuad=string(iArrRegressions(2).regFunc(valorMod))
+regExp=string(iArrRegressions(3).regFunc(valorMod))
+regPot=string(iArrRegressions(4).regFunc(valorMod))
+parameters = [" " "X"];
+tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
+pop  =[regLineal regCuad regExp regPot]';
+table1 = [parameters; [ tipos pop ]]
+handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
+
 endfunction
 
 
 function tabladeValor_callback(handles)
 //Write your callback for  tabladeValor  here
+
+endfunction
+
+
+function generarArchivo_callback(handles)
+global iArrRegressions
+global regLineal
+global regCuadratica
+global regExponencial
+global regPotencia
+//Write your callback for  generarArchivo  here
+// generar excel
+nomArchivo=handles.nombreArchivo.string;
+nomArchivo=nomArchivo+".csv"
+//valorMod=strtod(valorRec)
+//input(dar nombre excel)
+inicioExcel=handles.inicioExcel.string;
+finalExcel=handles.finalExcel.string;
+intervalosExcel=handles.intervalosExcel.string;
+iInicio = strtod(inicioExcel)
+iFin = strtod(finalExcel)
+iStep = strtod(intervalosExcel)
+iIntervalos = round((iFin - iInicio + 1) / iStep)
+xdata = linspace ( iInicio , iFin , iIntervalos);
+ydata = iArrRegressions(2).regFunc(xdata)
+excelData(:,1) = xdata
+excelData(:,2) = ydata
+filename = fullfile(get_absolute_file_path("Proyecto_Final_1.sce"), nomArchivo)
+csvWrite(excelData,filename)
 
 endfunction
