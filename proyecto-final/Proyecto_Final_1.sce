@@ -9,11 +9,20 @@ clear
 //   16 / Noviembre  / 2019    version 1.0
 //////////////////////////////////////////////////////
 
-// leer valores del excel
+//////////////////////////////////////////////////////
+//  GetExcelValues
+//
+//  Funcion que lee el archivo de Excel que el usuario
+//  elige para obtener los datos de las X's y Y's
+//
+//   Parametros:
+//      ninguno
+//   Regresa:
+//     iMatValues la matriz con las X's y Y's
+/////////////////////////////////////////////////////
 function iMatValues = GetExcelValues()
     // pide al usuario que seleccione el archivo
     sExcelName = uigetfile("*.xls")
-    disp(sExcelName)
     // lee las hojas del excel
     dSheets = readxls(sExcelName)
     // lee la primera hoja del excel
@@ -22,17 +31,16 @@ function iMatValues = GetExcelValues()
     iMatValues = dSheet1( : , 1 : 2)
 endfunction
 
-// Montante
-
 //////////////////////////////////////////////////////
 //  Montante
 //
-//  Funcion que imprime la matriz transformada y los
-//resultados de las incognitas de la matriz
+//  Funcion que resuelve para las incognitas de la matriz
+//  utilizando el metodo de Montante
 //   Parametros:
 //      matMon la matriz a transformar
 //   Regresa:
-//     iArrRegression un arreglo con las respuestas
+//     iArrRegression un arreglo con las respuestas a
+//                    las incognitas del sistema
 /////////////////////////////////////////////////////
 function iArrRegression = Montante(matMon)
     iPivAnt=1
@@ -60,23 +68,33 @@ function iArrRegression = Montante(matMon)
         matMon(iRen,iRen)=iPivAnt
     end
     for iRen=1:size(matMon,1)
-        //se expresan los resultados 
+        //se asignan los resultados a la matriz que se regresa
         iArrRegression(iRen)=matMon(iRen,size(matMon,2))/iPivAnt
     end
 endfunction
 
 
-
-// funcion que te regresa los valores que ocupas
-// 1- Lineal
-// 2- Cuadratica
-// 3- Exponencial
-// 4- Potencia
+//////////////////////////////////////////////////////
+//  GetParamsRegression
+//
+//  Funcion que calcula los datos necesarios para llamar a Montante
+//  
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//      iType entero que indica el tipo de regresion que se calcula
+//            1- Lineal
+//            2- Cuadratica
+//            3- Exponencial
+//            4- Potencia
+//   Regresa:
+//     iArrParams un arreglo con los los datos necesarios para llamar a Montante
+/////////////////////////////////////////////////////
 function iArrParams = GetParamsRegression(iMatValues, iType)
     // numero de elementos (renglones)
     iN = size(iMatValues, 1)
+    // el primer dato siempre es el numero de datos
     iArrParams(1) = iN
-
+    // si son de tipo 1, 2 o 3
     if (iType < 4) then
         // sumatoria de X's
         iSumX = 0
@@ -92,6 +110,7 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
         end
         iArrParams(3) = iSumX2
 
+        // si son lineal o cuadratica
         if (iType < 3) then
             // sumatoria de Y's
             iSumY = 0
@@ -104,7 +123,7 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
             for (iRen = 1 : iN)
                 iSumXY = iSumXY + (iMatValues(iRen, 1) * iMatValues(iRen, 2))
             end
-
+            // si es lineal
             if (iType == 1) then
                 iArrParams(4) = iSumY
                 iArrParams(5) = iSumXY
@@ -123,9 +142,7 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
                     iSumX4 = iSumX4 + (iMatValues(iRen, 1)) ^ 4
                 end
                 iArrParams(5) = iSumX4
-
                 iArrParams(6) = iSumY
-
                 iArrParams(7) = iSumXY
 
                 // sumatoria de (X^2 * Y)'s
@@ -134,7 +151,6 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
                     iSumX2Y = iSumX2Y + ((iMatValues(iRen, 1) ^2) * iMatValues(iRen, 2))
                 end
                 iArrParams(8) = iSumX2Y
-
             end
         else 
             // es tipo 3 (exponencial)
@@ -151,9 +167,7 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
                 iSumLnY_X = iSumLnY_X + (log(iMatValues(iRen, 2)) * iMatValues(iRen, 1))
             end
             iArrParams(5) = iSumLnY_X
-
         end
-
     else
         // es de tipo 4 (potencia)
         // sumatoria de ln(X)'s
@@ -183,11 +197,20 @@ function iArrParams = GetParamsRegression(iMatValues, iType)
             iSumLnYLnX = iSumLnYLnX + (log(iMatValues(iRen, 2)) * log(iMatValues(iRen, 1)))
         end
         iArrParams(5) = iSumLnYLnX
-
     end
 endfunction
 
-// regresion lineal
+//////////////////////////////////////////////////////
+//  GetRegLineal
+//
+//  Funcion que calcula los coeficientes de la regresion
+//  lineal y los regresa en un arreglo
+//
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//   Regresa:
+//     iArrRegLineal un arreglo con los coeficientes de la regresion lineal
+/////////////////////////////////////////////////////
 function iArrRegLineal = GetRegLineal(iMatValues)
     // generar matriz a transformar para mandar a Montante
     iArrParams = GetParamsRegression(iMatValues, 1)
@@ -208,12 +231,21 @@ function iArrRegLineal = GetRegLineal(iMatValues)
     // XY
     iMatMontanteParam(2, 3) = iArrParams(5)
 
-    // llamar a Montante y que regrese la matriz con las respuestas
+    // llamar a Montante y que regrese el arreglo con las respuestas
     iArrRegLineal = Montante(iMatMontanteParam)
-
 endfunction
 
-// regresion cuadratica
+//////////////////////////////////////////////////////
+//  GetRegCuadratica
+//
+//  Funcion que calcula los coeficientes de la regresion
+//  cuadratica y los regresa en un arreglo
+//
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//   Regresa:
+//     iArrRegCuadratica un arreglo con los coeficientes de la regresion cuadratica
+/////////////////////////////////////////////////////
 function iArrRegCuadratica = GetRegCuadratica(iMatValues)
     iArrParams = GetParamsRegression(iMatValues, 2)
 
@@ -251,7 +283,17 @@ function iArrRegCuadratica = GetRegCuadratica(iMatValues)
     iArrRegCuadratica = Montante(iMatMontanteParam)
 endfunction
 
-// regresion exponencial
+//////////////////////////////////////////////////////
+//  GetRegExponencial
+//
+//  Funcion que calcula los coeficientes de la regresion
+//  exponencial y los regresa en un arreglo
+//
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//   Regresa:
+//     iArrRegExponencial un arreglo con los coeficientes de la regresion exponencial
+/////////////////////////////////////////////////////
 function iArrRegExponencial = GetRegExponencial(iMatValues)
     iArrParams = GetParamsRegression(iMatValues, 3)
 
@@ -277,7 +319,17 @@ function iArrRegExponencial = GetRegExponencial(iMatValues)
     iArrRegExponencial(1) = exp(iArrRegExponencial(1))
 endfunction
 
-// regresion potencia
+//////////////////////////////////////////////////////
+//  GetRegPotencia
+//
+//  Funcion que calcula los coeficientes de la regresion
+//  potencia y los regresa en un arreglo
+//
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//   Regresa:
+//     iArrRegPotencia un arreglo con los coeficientes de la regresion potencia
+/////////////////////////////////////////////////////
 function iArrRegPotencia = GetRegPotencia(iMatValues)
     iArrParams = GetParamsRegression(iMatValues, 4)
 
@@ -304,16 +356,31 @@ function iArrRegPotencia = GetRegPotencia(iMatValues)
 endfunction
 
 
-// calcular r^2
+//////////////////////////////////////////////////////
+//  GetR2
+//
+//  Funcion que calcula el R^2 de cada regresion
+//
+//   Parametros:
+//      iMatValues la matriz con los valores de las X's y Y's (los datos)
+//      iArrRegressions una estructura de datos que almacena a cada regresion
+//
+//   Regresa:
+//     iArrRegR2 la estructura de datos de parametro, pero ahora con el R^2
+/////////////////////////////////////////////////////
 function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
+    // para saber cual es la mejor regresion
     dMejorReg = 0
     global dNumMejor
     dNumMejor = 0
+    // numero de datos
     iN = size(iMatValues, 1)
+    // media de las Y's
     dYMean = mean(iMatValues(:, 2))
     dYLog = log(iMatValues(:, 2))
     dYLogMean = mean(dYLog)
 
+    // calculo de las R^2s
     dSSTot = 0
     dSSTotLog = 0
     dSSRegLin = 0
@@ -329,12 +396,13 @@ function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
         dSSRegPot = dSSRegPot + (log(iMatValues(i, 2)) - log(iArrRegressions(4).regFunc(iMatValues(i, 1)))) ^ 2
     end
 
+    // se asignan los valores de las R^2's a cada regresion
     iArrRegressions(1).r2 = 1 - dSSRegLin / dSSTot
     iArrRegressions(2).r2 = 1 - dSSRegCuad / dSSTot
     iArrRegressions(3).r2 = 1 - dSSRegExp / dSSTotLog
     iArrRegressions(4).r2 = 1 - dSSRegPot / dSSTotLog
     iArrRegR2 = iArrRegressions
-    //disp(iArrRegressions(1).regParams(1))
+    // se despliegan los valores de R^2 en la interfaz
     linealstring= "y= ("+string(iArrRegressions(1).regParams(1))+") +("+string(iArrRegressions(1).regParams(2))+")*x"
     cuadraticastring="y= ("+string(iArrRegressions(2).regParams(1))+") +("+string(iArrRegressions(2).regParams(2))+")*x("+string(iArrRegressions(2).regParams(3))+")*x^2"
     exponencialstring="y= ("+string(iArrRegressions(3).regParams(1))+")*e^ ("+string(iArrRegressions(3).regParams(2))+")*x"
@@ -342,16 +410,17 @@ function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
     params = [" " "y" "r^2" ];
     towns = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
     pop  = [linealstring cuadraticastring exponencialstring potenciastring]';
-    //pop  = string([22.41 11.77 33.41 4.24]');
     temp = string([iArrRegR2(1).r2 iArrRegR2(2).r2 iArrRegR2(3).r2 iArrRegR2(4).r2]');
     table = [params; [ towns pop temp ]]
     handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.2022727,0.5,0.2],'Relief','default','SliderStep',[0.01,0.1],'String',table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
+    // se define la mejor regresion
     for(i=1:4)
         if(dMejorReg < iArrRegR2(i).r2)
             dMejorReg=iArrRegR2(i).r2
             dNumMejor = i
         end
     end
+    // se despliega la mejor regresion en la interfaz
     select dNumMejor
     case 1 then
         handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Lineal','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
@@ -362,7 +431,6 @@ function iArrRegR2 = GetR2(iMatValues, iArrRegressions)
     case 4 then
         handles.mejorModelo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.0045455,0.5,0.0954545],'Relief','default','SliderStep',[0.01,0.1],'String','Potencia','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','mejorModelo','Callback','')
     end
-
 endfunction
 
 function plottear(iMatValues, iArrRegressions)
