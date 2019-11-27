@@ -4,9 +4,9 @@ clear
 //
 //
 //   Armando Roque A01138717
-//   Marco Brown Cunningham 
+//   Marco Brown Cunningham A00822215
 //
-//   16 / Noviembre  / 2019    version 1.0
+//   27 / Noviembre  / 2019    version 1.0
 //////////////////////////////////////////////////////
 
 //////////////////////////////////////////////////////
@@ -58,7 +58,7 @@ function iArrRegression = Montante(matMon)
                 end
                 matMon(iK,iRen)=0
                 //los demas de la columna se transforman a 0
-             end
+            end
         end
         iPivAnt=matMon(iRen,iRen)
         //el pivote anterior cambia por el renglon K
@@ -437,20 +437,21 @@ endfunction
 //  plottear
 //
 //  Funcion que muestra dentro de la interfaz del grafico las representaciones
-//de las regresiones
+//  de las regresiones
+//
 //   Parametros:
 //      iMatValues la matriz con los valores de las X's y Y's (los datos)
 //      iArrRegressions una estructura de datos que almacena a cada regresion
 //
 //   Regresa:
-//     
+//      nada
 /////////////////////////////////////////////////////
 function plottear(iMatValues, iArrRegressions)
     xtitle ( "Regresiones con base en datos" , "Variable dependiente (X)" , "Variable independiente (Y)" );
     xgrid([1])
-    
+
     // plottear los puntos del excel
-    
+
     scatter(iMatValues(:, 1), iMatValues(:, 2), 36, "scilabred2","x")
     // plottear regresion lineal
     iTop = iMatValues(size(iMatValues, 1), 1) + 10
@@ -466,6 +467,7 @@ function plottear(iMatValues, iArrRegressions)
     // plotear regresion potencia
     ydata = iArrRegressions(4).regFunc(xdata)
     plot(xdata, ydata, "k")
+    // agregar leyenda de la tabla
     legend(['Datos','Lineal','Cuadratico', "Exponencial", "Potencia"], [1])
 endfunction
 
@@ -506,97 +508,10 @@ handles.intervalosExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1
 handles.nombreArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.6987179,0.2,0.2996795,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingrese Nombre del Archivo...','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','nombreArchivo','Callback','')
 handles.generarArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7099359,0.0181818,0.2804487,0.1727273],'Relief','default','SliderStep',[0.01,0.1],'String','Generar el Archivo','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','generarArchivo','Callback','generarArchivo_callback(handles)')
 
-
 f.visible = "on";
 
-
-////////////////////////////////////////////////////////
-//  examinarArchivo_callback
-//
-//  Función que actua como el mainProgram de nuestro programa,
-//dentro de ella se definen y realizan muchos procesos
-//   Parametros:
-//      la acción de un boton de la interfaz grafica
-//   Regresa:
-/////////////////////////////////////////////////////
-
-
-function examinarArchivo_callback(handles)
-// lee los programas de excel
-global iMatValues
-iMatValues = GetExcelValues()
-disp(iMatValues)
-// estructuras de datos para guardar las regresiones
-// regresion lineal
-global iArrRegressions
-global regLineal
-//sestructura para las regresiones
-regLineal = struct("regParams", GetRegLineal(iMatValues))
-deff("y = funLineal(x)", "y = regLineal.regParams(1) + regLineal.regParams(2) * x")
-regLineal.regFunc = funLineal
-iArrRegressions(1) = regLineal
-//regCuadratica
-global regCuadratica 
-regCuadratica = struct("regParams", GetRegCuadratica(iMatValues))
-deff("y = funCuadratica(x)", "y = regCuadratica.regParams(1) + regCuadratica.regParams(2) * x + regCuadratica.regParams(3) * (x ^ 2)")
-regCuadratica.regFunc = funCuadratica
-iArrRegressions(2) = regCuadratica
-
-// regExponencial
-global regExponencial
-regExponencial = struct("regParams", GetRegExponencial(iMatValues))
-deff("y = funExponencial(x)", "y = regExponencial.regParams(1) * exp(regExponencial.regParams(2) * x)")
-regExponencial.regFunc = funExponencial
-iArrRegressions(3) = regExponencial
-
-// reg Potencia
-global regPotencia
-regPotencia = struct("regParams", GetRegPotencia(iMatValues))
-deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ (regPotencia.regParams(2)))")
-regPotencia.regFunc = funPotencia
-iArrRegressions(4) = regPotencia
-
-
-
-// calcular r^2
-iArrRegressions = GetR2(iMatValues, iArrRegressions)
-
-plottear(iMatValues, iArrRegressions)
-
-// Valores Atipicos
-for i = 1 : size(iMatValues, 1)
-    dArrErrors(i) = iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))
-end
-// se calcula la media de los errores
-dErrorsMean = mean(dArrErrors)
-dStdDevErrors = 0
-// se calcula la desviacion estandar de los errores
-for i = 1 : size(dArrErrors,1)
-    dStdDevErrors = dStdDevErrors + ((dArrErrors(i) - dErrorsMean) ^ 2)
-end
-dStdDevErrors = (dStdDevErrors / size(dArrErrors,1)) ^ (1/2)
-// se buscan los outliers
-iContOutliers = 0
-sAtipicos = ""
-for i = 1 : size(dArrErrors, 1)
-    // dT es el numero de desviaciones estandar a las que se encuentra el error del promedio
-    dT = dArrErrors(i) / dStdDevErrors
-    // se considera un Outlier si dT es mayor o igual a 2
-    if (abs(dT) >= 2)
-        iContOutliers = iContOutliers + 1
-        // se agrega el outlier a una matriz donde se almacenan y se crea igual un string
-        sAtipicos = sAtipicos + " (" + string(iMatValues(i, 1)) + ", " + string(iMatValues(i, 2)) +")"
-        iArrOutliers(iContOutliers, 1) = iMatValues(i, 1)
-        iArrOutliers(iContOutliers, 2) = iMatValues(i, 2) 
-    end
-end
-handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String',sAtipicos,'Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
-
-endfunction
-
-
 function tablaModelos_callback(handles)
-//Write your callback for  tablaModelos  here
+    //Write your callback for  tablaModelos  here
 
 endfunction
 
@@ -604,34 +519,36 @@ endfunction
 //  calcularModelo_callback
 //
 //  Funcion que realiza y despliega los calculos a partir de un valor y 
-//la mejor regresion del sistema.
+//          segun la mejor regresion del sistema.
 //   Parametros:
+//       nada
 //   Regresa:
+//       nada
 /////////////////////////////////////////////////////
 function calcularModelo_callback(handles)
-//Write your callback for  calcularModelo  here
-global iMatValues
-global iArrRegressions
-global regLineal
-global regCuadratica
-global regExponencial
-global regPotencia
-global dNumMejor
-//se obtiene el string de los datos escritos en la interfaz
-valorRec=handles.valorModelo.string;
-valorMod=strtod(valorRec)
-//se calculan los datos de las regresiones a partir de un valor
-regLin=string(iArrRegressions(1).regFunc(valorMod))
-regCuad=string(iArrRegressions(2).regFunc(valorMod))
-regExp=string(iArrRegressions(3).regFunc(valorMod))
-regPot=string(iArrRegressions(4).regFunc(valorMod))
-//se agregan a la tabla
-parameters = [" " "X"];
-tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
-pop  =[regLin regCuad regExp regPot]';
-table1 = [parameters; [ tipos pop ]]
-handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
-
+    //Write your callback for  calcularModelo  here
+    // variables que se ocupan
+    global iMatValues
+    global iArrRegressions
+    global regLineal
+    global regCuadratica
+    global regExponencial
+    global regPotencia
+    global dNumMejor
+    //se obtiene el string de los datos escritos en la interfaz
+    valorRec=handles.valorModelo.string;
+    valorMod=strtod(valorRec)
+    //se calculan los datos de las regresiones a partir de un valor
+    regLin=string(iArrRegressions(1).regFunc(valorMod))
+    regCuad=string(iArrRegressions(2).regFunc(valorMod))
+    regExp=string(iArrRegressions(3).regFunc(valorMod))
+    regPot=string(iArrRegressions(4).regFunc(valorMod))
+    //se agregan a la tabla para desplegarse los valores en la interfaz
+    parameters = [" " "X"];
+    tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
+    pop  =[regLin regCuad regExp regPot]';
+    table1 = [parameters; [ tipos pop ]]
+    handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
 endfunction
 
 
@@ -648,34 +565,121 @@ endfunction
 //   Regresa:
 /////////////////////////////////////////////////////
 function generarArchivo_callback(handles)
-global iArrRegressions
-global regLineal
-global regCuadratica
-global regExponencial
-global regPotencia
-global dNumMejor
-//Write your callback for  generarArchivo  here
-// recupera el nombre del excel
-nomArchivo=handles.nombreArchivo.string;
-nomArchivo=nomArchivo+".csv"
-//se recupran las otras variables
-inicioExcel=handles.inicioExcel.string;
-finalExcel=handles.finalExcel.string;
-intervalosExcel=handles.intervalosExcel.string;
-// se cnvierten a un integer
-iInicio = strtod(inicioExcel)
-iFin = strtod(finalExcel)
-iStep = strtod(intervalosExcel)
-//calculo de intervalos (en integer)
-iIntervalos = round((iFin - iInicio + 1) / iStep)
-xdata = linspace ( iInicio , iFin , iIntervalos);
-ydata = iArrRegressions(dNumMejor).regFunc(xdata)
-excelData(:,1) = xdata
-excelData(:,2) = ydata
-//creacion del nombre de archivo con su directorio actual
-filename = fullfile(pwd(), nomArchivo)
-//escribir el archivo con los datos necesarios
-csvWrite(excelData,filename)
-
+    // variables que se ocupan
+    global iArrRegressions
+    global regLineal
+    global regCuadratica
+    global regExponencial
+    global regPotencia
+    global dNumMejor
+    //Write your callback for  generarArchivo  here
+    // recupera el nombre del excel
+    nomArchivo=handles.nombreArchivo.string;
+    nomArchivo=nomArchivo+".csv"
+    // se leen valores del usuario
+    inicioExcel=handles.inicioExcel.string;
+    finalExcel=handles.finalExcel.string;
+    intervalosExcel=handles.intervalosExcel.string;
+    // se convierten a un integer
+    iInicio = strtod(inicioExcel)
+    iFin = strtod(finalExcel)
+    iStep = strtod(intervalosExcel)
+    //calculo de intervalos (en integer)
+    iIntervalos = round((iFin - iInicio + 1) / iStep)
+    xdata = linspace ( iInicio , iFin , iIntervalos);
+    ydata = iArrRegressions(dNumMejor).regFunc(xdata)
+    // se asignan los datos
+    excelData(:,1) = xdata
+    excelData(:,2) = ydata
+    //creacion del nombre de archivo con su directorio actual
+    filename = fullfile(pwd(), nomArchivo)
+    //escribir el archivo con los datos necesarios
+    csvWrite(excelData,filename)
 endfunction
 
+////////////////////////////////////////////////////////
+//  examinarArchivo_callback
+//
+//  Función que actua como el mainProgram de nuestro programa,
+//  dentro de ella se definen y realizan muchos procesos
+//   Parametros:
+//      la acción de un boton de la interfaz grafica
+//   Regresa:
+//      nada
+/////////////////////////////////////////////////////
+function examinarArchivo_callback(handles)
+    // lee los programas de excel
+    global iMatValues
+    iMatValues = GetExcelValues()
+    // estructuras de datos para guardar las regresiones
+    // regresion lineal
+    global iArrRegressions
+    global regLineal
+    // estructura para las regresiones
+    regLineal = struct("regParams", GetRegLineal(iMatValues))
+    // se define la regresion lineal
+    deff("y = funLineal(x)", "y = regLineal.regParams(1) + regLineal.regParams(2) * x")
+    regLineal.regFunc = funLineal
+    // se guarda la regresion en la estructura de datos
+    iArrRegressions(1) = regLineal
+    //regCuadratica
+    global regCuadratica 
+    regCuadratica = struct("regParams", GetRegCuadratica(iMatValues))
+    // se define la regresion cuadratica
+    deff("y = funCuadratica(x)", "y = regCuadratica.regParams(1) + regCuadratica.regParams(2) * x + regCuadratica.regParams(3) * (x ^ 2)")
+    regCuadratica.regFunc = funCuadratica
+    // se guarda la regresion en la estructura de datos
+    iArrRegressions(2) = regCuadratica
+
+    // regExponencial
+    global regExponencial
+    regExponencial = struct("regParams", GetRegExponencial(iMatValues))
+    // se define la regresion exponencial
+    deff("y = funExponencial(x)", "y = regExponencial.regParams(1) * exp(regExponencial.regParams(2) * x)")
+    regExponencial.regFunc = funExponencial
+    // se guarda la regresion en la estructura de datos
+    iArrRegressions(3) = regExponencial
+
+    // reg Potencia
+    global regPotencia
+    regPotencia = struct("regParams", GetRegPotencia(iMatValues))
+    // se define la regresion potencia
+    deff("y = funPotencia(x)", "y = regPotencia.regParams(1) * (x ^ (regPotencia.regParams(2)))")
+    regPotencia.regFunc = funPotencia
+    // se guarda la regresion en la estructura de datos
+    iArrRegressions(4) = regPotencia
+
+    // calcular r^2
+    iArrRegressions = GetR2(iMatValues, iArrRegressions)
+
+    // se plotean las regresiones
+    plottear(iMatValues, iArrRegressions)
+
+    // Valores Atipicos
+    for i = 1 : size(iMatValues, 1)
+        dArrErrors(i) = iMatValues(i, 2) - iArrRegressions(3).regFunc(iMatValues(i, 1))
+    end
+    // se calcula la media de los errores
+    dErrorsMean = mean(dArrErrors)
+    dStdDevErrors = 0
+    // se calcula la desviacion estandar de los errores
+    for i = 1 : size(dArrErrors,1)
+        dStdDevErrors = dStdDevErrors + ((dArrErrors(i) - dErrorsMean) ^ 2)
+    end
+    dStdDevErrors = (dStdDevErrors / size(dArrErrors,1)) ^ (1/2)
+    // se buscan los outliers
+    iContOutliers = 0
+    sAtipicos = ""
+    for i = 1 : size(dArrErrors, 1)
+        // dT es el numero de desviaciones estandar a las que se encuentra el error del promedio
+        dT = dArrErrors(i) / dStdDevErrors
+        // se considera un Outlier si dT es mayor o igual a 2
+        if (abs(dT) >= 2)
+            iContOutliers = iContOutliers + 1
+            // se agrega el outlier a una matriz donde se almacenan y se crea igual un string
+            sAtipicos = sAtipicos + " (" + string(iMatValues(i, 1)) + ", " + string(iMatValues(i, 2)) +")"
+        end
+    end
+    // se despliegan los valores atipicos
+    handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String',sAtipicos,'Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
+endfunction
