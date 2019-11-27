@@ -583,7 +583,7 @@ for i = 1 : size(dArrErrors, 1)
     // dT es el numero de desviaciones estandar a las que se encuentra el error del promedio
     dT = dArrErrors(i) / dStdDevErrors
     // se considera un Outlier si dT es mayor o igual a 2
-    if (dT >= 2)
+    if (abs(dT) >= 2)
         iContOutliers = iContOutliers + 1
         // se agrega el outlier a una matriz donde se almacenan y se crea igual un string
         sAtipicos = sAtipicos + " (" + string(iMatValues(i, 1)) + ", " + string(iMatValues(i, 2)) +")"
