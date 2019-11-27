@@ -483,7 +483,6 @@ handles.Gráfica= newaxes();handles.Gráfica.margins = [ 0 0 0 0];handles.Gráfi
 params = [" " "y" "r^2" ];
 towns = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
 pop  = ["valor1" "valor2" "valor3" "valor4"]';
-//pop  = string([22.41 11.77 33.41 4.24]');
 temp = ["valor1" "valor2" "valor3" "valor4"]';
 table = [params; [ towns pop temp ]]
 handles.tablaModelos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0,0.2022727,0.5,0.2],'Relief','default','SliderStep',[0.01,0.1],'String',table,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tablaModelos','Callback','tablaModelos_callback(handles)')
@@ -498,12 +497,12 @@ tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
 pop  = string(["valor1" "valor2" "valor3" "valor4"]');
 table1 = [parameters; [ tipos pop ]]
 handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
-handles.texto3=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.5022727,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Los valores atípicos son:','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto3','Callback','')
-handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Atípicos','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
+handles.texto3=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.5022727,0.4983974,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Los valores atipicos son:','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','texto3','Callback','')
+handles.valorAtipicos=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.4,0.5,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Atipicos','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','valorAtipicos','Callback','')
 handles.text4=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.5,0.3,0.4967949,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingresa lo que se pide para el archivo de excel','Style','text','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','text4','Callback','')
 handles.inicioExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.2,0.2019231,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Valor Inicio','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','inicioExcel','Callback','')
 handles.finalExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.1,0.2019231,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Valor Final','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','finalExcel','Callback','')
-handles.intervalosExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.0022727,0.2019231,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Intervalos de:','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','intervalosExcel','Callback','')
+handles.intervalosExcel=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.0022727,0.2019231,0.0977273],'Relief','default','SliderStep',[0.01,0.1],'String','Diferencia entre intervalos:','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','intervalosExcel','Callback','')
 handles.nombreArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.6987179,0.2,0.2996795,0.1],'Relief','default','SliderStep',[0.01,0.1],'String','Ingrese Nombre del Archivo...','Style','edit','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','nombreArchivo','Callback','')
 handles.generarArchivo=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','center','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.7099359,0.0181818,0.2804487,0.1727273],'Relief','default','SliderStep',[0.01,0.1],'String','Generar el Archivo','Style','pushbutton','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','generarArchivo','Callback','generarArchivo_callback(handles)')
 
@@ -622,14 +621,14 @@ global dNumMejor
 valorRec=handles.valorModelo.string;
 valorMod=strtod(valorRec)
 //se calculan los datos de las regresiones a partir de un valor
-regLineal=string(iArrRegressions(1).regFunc(valorMod))
+regLin=string(iArrRegressions(1).regFunc(valorMod))
 regCuad=string(iArrRegressions(2).regFunc(valorMod))
 regExp=string(iArrRegressions(3).regFunc(valorMod))
 regPot=string(iArrRegressions(4).regFunc(valorMod))
 //se agregan a la tabla
 parameters = [" " "X"];
 tipos = ["Lineal" "Cuadrático" "Exponencial" "Potencia"]';
-pop  =[regLineal regCuad regExp regPot]';
+pop  =[regLin regCuad regExp regPot]';
 table1 = [parameters; [ tipos pop ]]
 handles.tabladeValor=uicontrol(f,'unit','normalized','BackgroundColor',[-1,-1,-1],'Enable','on','FontAngle','normal','FontName','Tahoma','FontSize',[12],'FontUnits','points','FontWeight','normal','ForegroundColor',[-1,-1,-1],'HorizontalAlignment','left','ListboxTop',[],'Max',[1],'Min',[0],'Position',[0.4983974,0.6,0.4983974,0.2022727],'Relief','default','SliderStep',[0.01,0.1],'String',table1,'Style','table','Value',[0],'VerticalAlignment','middle','Visible','on','Tag','tabladeValor','Callback','tabladeValor_callback(handles)')
 
@@ -654,6 +653,7 @@ global regLineal
 global regCuadratica
 global regExponencial
 global regPotencia
+global dNumMejor
 //Write your callback for  generarArchivo  here
 // recupera el nombre del excel
 nomArchivo=handles.nombreArchivo.string;
@@ -669,7 +669,7 @@ iStep = strtod(intervalosExcel)
 //calculo de intervalos (en integer)
 iIntervalos = round((iFin - iInicio + 1) / iStep)
 xdata = linspace ( iInicio , iFin , iIntervalos);
-ydata = iArrRegressions(2).regFunc(xdata)
+ydata = iArrRegressions(dNumMejor).regFunc(xdata)
 excelData(:,1) = xdata
 excelData(:,2) = ydata
 //creacion del nombre de archivo con su directorio actual
